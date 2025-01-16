@@ -10,8 +10,6 @@
   };
 
   outputs = inputs @ {
-    nixpkgs,
-    nixpkgs-unstable,
     home-manager,
     catppuccin,
     ...
@@ -39,22 +37,19 @@
         state,
         users,
       }:
-        nixpkgs.lib.nixosSystem rec {
-          inherit system;
-
-          specialArgs = {
-            inherit hostname inputs system state;
-
-            nixpkgs = let
-              options = {
-                inherit system;
-                config.allowUnfree = true;
-              };
-            in {
-              stable = import nixpkgs options;
-              unstable = import nixpkgs-unstable options;
-            };
+        inputs.nixpkgs.lib.nixosSystem
+        (let
+          options = {
+            inherit system;
+            config.allowUnfree = true;
           };
+          nixpkgs = {
+            stable = import inputs.nixpkgs options;
+            unstable = import inputs.nixpkgs-unstable options;
+          };
+          specialArgs = {inherit nixpkgs hostname system state inputs;};
+        in {
+          inherit system specialArgs;
 
           modules = [
             ./configuration.nix
@@ -62,7 +57,7 @@
             {
               system.stateVersion = state;
               programs.zsh.enable = true;
-              users.defaultUserShell = specialArgs.nixpkgs.stable.zsh;
+              users.defaultUserShell = nixpkgs.stable.zsh;
             }
 
             home-manager.nixosModules.home-manager
@@ -93,13 +88,13 @@
                 }: {
                   isNormalUser = true;
                   extraGroups = groups;
-                  shell = specialArgs.nixpkgs.stable.${shell};
+                  shell = nixpkgs.stable.${shell};
                 })
                 users;
             }
             catppuccin.nixosModules.catppuccin
           ];
-        })
+        }))
       hosts;
   };
 }

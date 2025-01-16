@@ -13,6 +13,7 @@
 
       gpg.format = "ssh";
       commit.gpgsign = true;
+      tag.forceSignAnnotated = true;
     };
   };
 
