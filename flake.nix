@@ -47,6 +47,7 @@
             stable = import inputs.nixpkgs options;
             unstable = import inputs.nixpkgs-unstable options;
           };
+
           specialArgs = {inherit nixpkgs hostname system state inputs;};
         in {
           inherit system specialArgs;
@@ -54,6 +55,7 @@
           modules = [
             ./configuration.nix
             ./hosts/${hostname}.nix
+            catppuccin.nixosModules.catppuccin
             {
               system.stateVersion = state;
               programs.zsh.enable = true;
@@ -92,7 +94,6 @@
                 })
                 users;
             }
-            catppuccin.nixosModules.catppuccin
           ];
         }))
       hosts;
