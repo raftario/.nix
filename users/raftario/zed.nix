@@ -12,6 +12,11 @@
     # ];
 
     userSettings = {
+      buffer_font_family = "Berkeley Mono Variable";
+      buffer_font_size = 16;
+      ui_font_family = "Public Sans";
+      ui_font_size = 16;
+
       languages.Nix.language_servers = ["nixd" "!nil"];
       languages.Nix.formatter.external = {
         command = "alejandra";

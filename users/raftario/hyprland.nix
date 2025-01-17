@@ -1,4 +1,8 @@
-{nixpkgs, ...}: {
+{
+  nixpkgs,
+  pkgs,
+  ...
+}: {
   catppuccin = {
     enable = true;
     flavor = "macchiato";
@@ -16,10 +20,17 @@
     defaultFonts = {
       sansSerif = ["Public Sans" "Noto Sans"];
       serif = ["EB Garamond" "Noto Serif"];
-      monospace = ["Noto Sans Mono"];
+      monospace = ["Berkeley Mono Variable" "Noto Sans Mono"];
       emoji = ["Noto Color Emoji"];
     };
   };
+  xdg.configFile."fontconfig/fonts.conf".text = ''
+    <?xml version='1.0'?>
+    <!DOCTYPE fontconfig SYSTEM 'urn:fontconfig:fonts.dtd'>
+    <fontconfig>
+      <include ignore_missing="yes" prefix="xdg">fontconfig/conf.d</include>
+    </fontconfig>
+  '';
 
   wayland.windowManager.hyprland = {
     enable = true;
@@ -152,8 +163,13 @@
   home.packages = with nixpkgs.stable; [
     hyprpolkitagent
 
+    (pkgs.callPackage ../../modules/berkeley-mono.nix {})
+    (google-fonts.override {
+      fonts = [
+        "EB Garamond"
+      ];
+    })
     public-sans
-    eb-garamond
     noto-fonts
     noto-fonts-color-emoji
   ];
